@@ -25,9 +25,6 @@ jobs:
         with:
           flutter-version: '3.19.0'
 
-      - name: Flutter doctor
-        run: flutter doctor -v
-
       - name: Accept Android licenses
         run: yes | flutter doctor --android-licenses
 
@@ -37,8 +34,10 @@ jobs:
       - name: Build APK (Release)
         run: flutter build apk --release
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      # ✅ อัป APK เป็น Release (ไฟล์ .apk ตรง)
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: nadtasit
-          path: build/app/outputs/flutter-apk/app-release.apk
+          tag_name: v1.0
+          name: Nadtasitfood APK v1.0
+          files: build/app/outputs/flutter-apk/app-release.apk
