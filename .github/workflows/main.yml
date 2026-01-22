@@ -11,33 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. ดึงโค้ดจาก repo
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      # 2. ตั้งค่า Java 17 (จำเป็นสำหรับ Flutter ใหม่)
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
+      # 3. ติดตั้ง Flutter + เปิด cache (แก้ Too many retries)
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.38.7'
+          cache: true
 
+      # 4. ยอมรับ Android licenses
       - name: Accept Android licenses
         run: yes | flutter doctor --android-licenses
 
-      - name: Install dependencies
-        run: flutter pub get
+      # 5. ดึง dependencies (verbose เพื่อดูปัญหา)
+      - name: Flutter pub get
+        run: flutter pub get --verbose
 
-      - name: Build APK (Release)
+      # 6. Build APK (Release)
+      - name: Build APK
         run: flutter build apk --release
 
-      # ✅ อัป APK เป็น Release (ไฟล์ .apk ตรง)
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      # 7. อัปโหลด APK เป็นไฟล์ดาวน์โหลด
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: v1.0
-          name: Nadtasitfood APK v1.0
-          files: build/app/outputs/flutter-apk/app-release.apk
+          name: nadtasit-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
